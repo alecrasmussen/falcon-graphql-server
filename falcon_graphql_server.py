@@ -335,6 +335,7 @@ class GraphQLResource:
             raise
 
     def on_put(self, req, resp):
+        "Handles PUT requests."
         resp.status = falcon.HTTP_405
         resp.body = json.dumps(
             {"errors": [
@@ -344,6 +345,7 @@ class GraphQLResource:
         )
 
     def on_patch(self, req, resp):
+        "Handles PATCH requests."
         resp.status = falcon.HTTP_405
         resp.body = json.dumps(
             {"errors": [
@@ -353,6 +355,7 @@ class GraphQLResource:
         )
 
     def on_delete(self, req, resp):
+        "Handles DELETE requests."
         resp.status = falcon.HTTP_405
         resp.body = json.dumps(
             {"errors": [
@@ -365,7 +368,7 @@ class GraphQLResource:
 class StaticGraphiQLResource:
     "Serves GraphiQL dashboard. Meant to be used during development only."
     def on_get(self, req, resp, static_file=None):
-        "Handles GraphiQL get requests."
+        "Handles GraphiQL GET requests."
         if static_file is None:
             static_file = 'graphiql.html'
             resp.content_type = 'text/html; charset=UTF-8'
