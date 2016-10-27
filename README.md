@@ -1,4 +1,4 @@
-# Graphql Server example using Falcon and Graphene
+# Python Graphql server example using Falcon and Graphene
 
 To install dependencies:
 ```
