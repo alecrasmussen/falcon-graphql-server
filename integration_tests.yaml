@@ -1,0 +1,167 @@
+# integration_tests.yaml
+#
+# Integration tests for GraphQL servers.
+#
+# To install requirements:
+#  pip3 install pyresttest
+#
+# To run tests against the server:
+#   resttest.py http://localhost:4004 integration_tests.yaml --log info
+#
+
+---
+- config:
+  - testset: "Reference GraphQL tests"
+
+- test:
+  - group: "Reference"
+  - name: "GET - No query string"
+  - method: "GET"    
+  - url: "/graphql"
+  - expected_status: [400]
+  - validators:
+    - compare: {header: 'content-type', comparator: equals,
+                expected: 'application/json; charset=UTF-8'}
+    - compare: {raw_body: "", comparator: equals,
+                expected: '{"errors":[{"message":"Must provide query string."}]}'}
+
+- test:
+  - group: "Reference"
+  - name: "GET - Successful query"
+  - method: "GET"
+  - url: "/graphql?query=%7B__schema%7BqueryType%7Bkind%7D%7D%7D"
+  - expected_status: [200]
+  - validators:
+    - compare: {header: 'content-type', comparator: equals,
+                expected: 'application/json; charset=UTF-8'}
+    - compare: {raw_body: "", comparator: equals,
+                expected: '{"data":{"__schema":{"queryType":{"kind":"OBJECT"}}}}'}
+
+- test:
+  - group: "Reference"
+  - name: "POST - No query string"
+  - method: "POST"    
+  - url: "/graphql"
+  - expected_status: [400]
+  - validators:
+    - compare: {header: 'content-type', comparator: equals,
+                expected: 'application/json; charset=UTF-8'}
+    - compare: {raw_body: "", comparator: equals,
+                expected: '{"errors":[{"message":"Must provide query string."}]}'}
+
+- test:
+  - group: "Reference"
+  - name: "POST - Query string in URL"
+  - method: "POST"    
+  - url: "/graphql?query=%7B__schema%7BqueryType%7Bkind%7D%7D%7D"
+  - expected_status: [200]
+  - validators:
+    - compare: {header: 'content-type', comparator: equals,
+                expected: 'application/json; charset=UTF-8'}
+    - compare: {raw_body: "", comparator: equals,
+                expected: '{"data":{"__schema":{"queryType":{"kind":"OBJECT"}}}}'}
+
+- test:
+  - group: "Reference"
+  - name: "POST - Query string in post body as JSON, no content-type header"
+  - method: "POST"    
+  - url: "/graphql"
+  - body: '{"query":"{__schema{queryType{kind}}}"}'
+  - expected_status: [400]
+  - validators:
+    - compare: {header: 'content-type', comparator: equals,
+                expected: 'application/json; charset=UTF-8'}
+    - compare: {raw_body: "", comparator: equals,
+                expected: '{"errors":[{"message":"Must provide query string."}]}'}
+
+- test:
+  - group: "Reference"
+  - name: "POST - Query string in post body as JSON"
+  - method: "POST"    
+  - url: "/graphql"
+  - headers: {"content-type": "application/json"}
+  - body: '{"query":"{__schema{queryType{kind}}}"}'
+  - expected_status: [200]
+  - validators:
+    - compare: {header: 'content-type', comparator: equals,
+                expected: 'application/json; charset=UTF-8'}
+    - compare: {raw_body: "", comparator: equals,
+                expected: '{"data":{"__schema":{"queryType":{"kind":"OBJECT"}}}}'}
+
+- test:
+  - group: "Reference"
+  - name: "POST - Query string as x-www-form-urlencoded, no content-type header"
+  - method: "POST"    
+  - url: "/graphql"
+  - body: 'query=%7B__schema%7BqueryType%7Bkind%7D%7D%7D'
+  - expected_status: [200]
+  - validators:
+    - compare: {header: 'content-type', comparator: equals,
+                expected: 'application/json; charset=UTF-8'}
+    - compare: {raw_body: "", comparator: equals,
+                expected: '{"data":{"__schema":{"queryType":{"kind":"OBJECT"}}}}'}
+
+- test:
+  - group: "Reference"
+  - name: "POST - Query string in post body as x-www-form-urlencoded"
+  - method: "POST"    
+  - url: "/graphql"
+  - headers: {"content-type": "application/x-www-form-urlencoded"}
+  - body: 'query=%7B__schema%7BqueryType%7Bkind%7D%7D%7D'
+  - expected_status: [200]
+  - validators:
+    - compare: {header: 'content-type', comparator: equals,
+                expected: 'application/json; charset=UTF-8'}
+    - compare: {raw_body: "", comparator: equals,
+                expected: '{"data":{"__schema":{"queryType":{"kind":"OBJECT"}}}}'}
+
+- test:
+  - group: "Reference"
+  - name: "POST - Query string in post body as GraphQL, no content-type header"
+  - method: "POST"    
+  - url: "/graphql"
+  - body: '{__schema{queryType{kind}}}'
+  - expected_status: [400]
+  - validators:
+    - compare: {header: 'content-type', comparator: equals,
+                expected: 'application/json; charset=UTF-8'}
+    - compare: {raw_body: "", comparator: equals,
+                expected: '{"errors":[{"message":"Must provide query string."}]}'}
+
+- test:
+  - group: "Reference"
+  - name: "POST - Query string in post body as GraphQL"
+  - method: "POST"    
+  - url: "/graphql"
+  - headers: {"content-type": "application/graphql"}
+  - body: '{__schema{queryType{kind}}}'
+  - expected_status: [200]
+  - validators:
+    - compare: {header: 'content-type', comparator: equals,
+                expected: 'application/json; charset=UTF-8'}
+    - compare: {raw_body: "", comparator: equals,
+                expected: '{"data":{"__schema":{"queryType":{"kind":"OBJECT"}}}}'}
+
+- test:
+  - group: "Reference"
+  - name: "PUT - unsupported method"
+  - method: "PUT"    
+  - url: "/graphql"
+  - expected_status: [405]
+  - validators:
+    - compare: {header: 'content-type', comparator: equals,
+                expected: 'application/json; charset=UTF-8'}
+    - compare: {raw_body: "", comparator: equals,
+                expected: '{"errors":[{"message":"GraphQL only supports GET and POST requests."}]}'}
+
+- test:
+  - group: "Reference"
+  - name: "DELETE - unsupported method"
+  - method: "DELETE"    
+  - url: "/graphql"
+  - expected_status: [405]
+  - validators:
+    - compare: {header: 'content-type', comparator: equals,
+                expected: 'application/json; charset=UTF-8'}
+    - compare: {raw_body: "", comparator: equals,
+                expected: '{"errors":[{"message":"GraphQL only supports GET and POST requests."}]}'}

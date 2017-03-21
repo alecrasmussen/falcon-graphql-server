@@ -10,7 +10,7 @@ pip3 install -r requirements.txt
 
 To run:
 ```
-gunicorn falcon_graphql_server:graphQL_api -b localhost:4004
+gunicorn -c server_config.py falcon_graphql_server:graphQL_api
 ```
 
 To use, `POST` as `application/json` with `query`, `variables`, & `operationName` args:
